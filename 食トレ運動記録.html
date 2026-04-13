@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="食トレ記録">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#005A9C">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>食トレ＆運動記録 | 背骨コンディショニング協会</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Serif+Display&display=swap');
+:root{
+  --g1:#E8745A;--g1b:#FDF1EE;
+  --g2:#5B9E6B;--g2b:#EEF7F1;
+  --g3:#E8B84B;--g3b:#FDF7E8;
+  --g4:#6B8FCC;--g4b:#EEF2FB;
+  --cardio:#E06060;--cardiob:#FEF0F0;
+  --muscle:#6B8FCC;--muscleb:#EEF2FB;
+  --bg:#F5F3EF;--card:#FFF;--text:#1E1E1E;
+  --sub:#999;--border:#EBEBEB;--sh:0 2px 14px rgba(0,0,0,0.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);max-width:480px;margin:0 auto;padding-bottom:80px;font-size:14px}
+
+/* ヘッダー */
+.hd{background:var(--card);padding:13px 16px 11px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center}
+.hd-title{font-family:'DM Serif Display',serif;font-size:17px;letter-spacing:.3px}
+.dnav{display:flex;align-items:center;gap:7px}
+.dbtn{background:none;border:1px solid var(--border);border-radius:6px;width:27px;height:27px;cursor:pointer;font-size:13px;color:var(--sub);display:flex;align-items:center;justify-content:center}
+.dlbl{font-size:12px;color:var(--sub);font-weight:500;white-space:nowrap}
+
+/* サマリー */
+.summary{background:var(--card);padding:13px 16px;border-bottom:1px solid var(--border)}
+.s-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:7px}
+.tpts{display:flex;align-items:baseline;gap:3px}
+.tbig{font-family:'DM Serif Display',serif;font-size:36px;line-height:1}
+.tof{font-size:13px;color:var(--sub)}
+.badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
+.b-ok{background:#E8F5E9;color:#2E7D32}
+.b-ov{background:#FFF3E0;color:#E65100}
+.b-un{background:#EEF2FB;color:#3A5FA0}
+.tbar-w{background:#EEECE8;border-radius:4px;height:5px;overflow:hidden;margin-bottom:11px}
+.tbar-f{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--g1),var(--g2) 33%,var(--g3) 66%,var(--g4));transition:width .5s;max-width:100%}
+.gg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.gc{display:flex;flex-direction:column;align-items:center;gap:3px}
+.rw{position:relative;width:54px;height:54px}
+.rw svg{transform:rotate(-90deg)}
+.rnum{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:13px;font-weight:700}
+.gname{font-size:9px;color:var(--sub);text-align:center;white-space:nowrap}
+.gtgt{font-size:9px;color:var(--sub)}
+
+/* ボトムナビ */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border);display:flex;padding:5px 0 9px;z-index:100}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:4px;font-family:'Noto Sans JP',sans-serif}
+.ni{font-size:20px}
+.nl{font-size:10px;color:var(--sub);font-weight:500}
+.nb.active .nl{color:var(--text);font-weight:700}
+
+/* ページ */
+.page{display:none;padding:12px 14px 0}
+.page.active{display:block}
+
+/* セクションヘッダー */
+.sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;margin-top:4px}
+.sec-icon{font-size:18px}
+.sec-title{font-size:15px;font-weight:700}
+.sec-line{flex:1;height:1px;background:var(--border)}
+
+/* カード */
+.card{background:var(--card);border-radius:13px;padding:14px;margin-bottom:10px;box-shadow:var(--sh)}
+.card-title{font-size:10px;color:var(--sub);font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:9px}
+
+/* グループ選択 */
+.gsel{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:10px}
+.gsb{padding:10px 9px;border:2px solid var(--border);border-radius:11px;background:var(--card);cursor:pointer;text-align:left;transition:all .18s;font-family:'Noto Sans JP',sans-serif}
+.gsb.s1{border-color:var(--g1);background:var(--g1b)}
+.gsb.s2{border-color:var(--g2);background:var(--g2b)}
+.gsb.s3{border-color:var(--g3);background:var(--g3b)}
+.gsb.s4{border-color:var(--g4);background:var(--g4b)}
+.gsn{font-size:9px;color:var(--sub);font-weight:500}
+.gsname{font-size:12px;font-weight:700;margin:2px 0}
+.gsex{font-size:10px;color:var(--sub);line-height:1.3}
+
+/* 入力 */
+.fi{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:14px;background:var(--bg);outline:none;transition:border .2s;margin-bottom:8px}
+.fi:focus{border-color:#999;background:#fff}
+.pr{display:flex;align-items:center;justify-content:space-between}
+.prlabel{font-size:12px;color:var(--sub)}
+.pstepper{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg)}
+.stpb{background:none;border:none;width:38px;height:38px;font-size:19px;cursor:pointer;color:var(--sub);display:flex;align-items:center;justify-content:center}
+.stpb:active{background:#E8E8E8}
+.stpv{font-size:16px;font-weight:700;min-width:28px;text-align:center}
+
+/* クイック食品 */
+.qfs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.qfb{padding:5px 10px;background:var(--card);border:1.5px solid var(--border);border-radius:20px;font-family:'Noto Sans JP',sans-serif;font-size:11px;cursor:pointer;color:var(--text)}
+.qfb:active{border-color:#999;background:#F5F5F5}
+
+/* ボタン */
+.abtn{width:100%;padding:13px;border:none;border-radius:11px;font-family:'Noto Sans JP',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;color:white}
+.abtn:active{opacity:.8}
+.abtn:disabled{opacity:.35;cursor:not-allowed}
+.abtn-food{background:var(--text)}
+
+/* 運動入力グリッド */
+.igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.ig-item{display:flex;flex-direction:column;gap:4px}
+.ig-label{font-size:10px;color:var(--sub);font-weight:500}
+.ig-input{padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:14px;background:var(--bg);outline:none;width:100%;text-align:center}
+.ig-input:focus{border-color:#999;background:#fff}
+
+/* 心拍数ガイド */
+.hr-guide{background:var(--cardiob);border-radius:10px;padding:11px 13px;margin-bottom:10px;border-left:3px solid var(--cardio)}
+.hr-t{font-size:11px;font-weight:700;color:var(--cardio);margin-bottom:5px}
+.hr-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px}
+.hr-val{font-weight:700;color:var(--cardio)}
+
+/* 記録アイテム */
+.rec-list{display:flex;flex-direction:column;gap:6px}
+.ri{background:var(--card);border-radius:11px;padding:10px 13px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh);animation:fu .2s ease}
+@keyframes fu{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.rdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.rinfo{flex:1;min-width:0}
+.rname{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rmeta{font-size:11px;color:var(--sub);margin-top:1px}
+.rpts{font-family:'DM Serif Display',serif;font-size:20px;flex-shrink:0}
+.rdel{background:none;border:none;color:#CCC;cursor:pointer;font-size:14px;padding:4px}
+.rdel:active{color:#E55}
+.ex-icon-b{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.empty-msg{text-align:center;padding:20px;color:var(--sub);font-size:12px;line-height:2}
+
+/* 設定 */
+.sr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sr:last-child{margin-bottom:0}
+.slabel{font-size:12px;display:flex;align-items:center;gap:6px}
+.sdot{width:9px;height:9px;border-radius:50%}
+.sinput{width:58px;padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:14px;text-align:center;outline:none}
+.sinput:focus{border-color:#999}
+.prow{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.pbtn{padding:6px 11px;border:1.5px solid var(--border);border-radius:20px;background:var(--bg);font-family:'Noto Sans JP',sans-serif;font-size:11px;cursor:pointer}
+.pbtn:active{background:#E8E8E8}
+.savebtn{width:100%;padding:12px;background:var(--text);color:white;border:none;border-radius:11px;font-family:'Noto Sans JP',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.savebtn:active{opacity:.8}
+.toast{display:none;text-align:center;padding:8px;color:#2E7D32;font-size:12px;font-weight:700}
+
+/* カスタム食品 */
+.cfood-row{display:flex;gap:6px;margin-bottom:7px}
+.cfood-input{flex:1;padding:8px 11px;border:1.5px solid var(--border);border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:13px;background:var(--bg);outline:none}
+.cfood-input:focus{border-color:#999;background:#fff}
+.cfood-addbtn{padding:8px 13px;border:none;border-radius:10px;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:white;white-space:nowrap}
+.cfood-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;min-height:22px}
+.cfood-tag{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.cfood-del{background:none;border:none;cursor:pointer;font-size:11px;opacity:.55;padding:0;line-height:1}
+.cgtabs{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap}
+.cgtb{padding:5px 11px;border:1.5px solid var(--border);border-radius:20px;font-family:'Noto Sans JP',sans-serif;font-size:11px;cursor:pointer;background:var(--bg);font-weight:500;color:var(--sub)}
+.cgtb.cg1{border-color:var(--g1);background:var(--g1b);color:var(--g1);font-weight:700}
+.cgtb.cg2{border-color:var(--g2);background:var(--g2b);color:var(--g2);font-weight:700}
+.cgtb.cg3{border-color:var(--g3);background:var(--g3b);color:var(--g3);font-weight:700}
+.cgtb.cg4{border-color:var(--g4);background:var(--g4b);color:var(--g4);font-weight:700}
+
+/* 週間 */
+.wbars{display:flex;align-items:flex-end;gap:5px;height:80px;margin-bottom:4px}
+.wbw{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.wbbg{width:100%;background:#F0EDE8;border-radius:4px;height:56px;display:flex;align-items:flex-end;overflow:hidden}
+.wbf{width:100%;border-radius:4px;background:linear-gradient(180deg,var(--g4),var(--g1));transition:height .4s}
+.wbday{font-size:10px;color:var(--sub)}
+.wbpts{font-size:10px;font-weight:700;color:var(--text);min-height:13px}
+
+/* 仕切り線 */
+.divider{height:1px;background:var(--border);margin:16px 0}
+/* 点数ポップアップ */
+.pts-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.pts-popup-overlay.open{display:flex}
+.pts-popup{background:var(--card);border-radius:18px 18px 0 0;padding:18px 16px 28px;width:100%;max-width:480px;animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.pts-popup-title{font-size:12px;color:var(--sub);font-weight:500;text-align:center;margin-bottom:14px}
+.pts-popup-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:10px}
+.pts-popup-btn{padding:11px 4px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'Noto Sans JP',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+.pts-popup-btn:active,.pts-popup-btn.selected{background:var(--text);color:white;border-color:var(--text)}
+.pts-popup-close{width:100%;padding:12px;border:none;border-radius:10px;background:#F0EDE8;font-family:'Noto Sans JP',sans-serif;font-size:13px;color:var(--sub);cursor:pointer;font-weight:500}
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<div class="hd">
+  <span class="hd-title">🥗 食トレ＆運動記録</span>
+  <div class="dnav">
+    <button class="dbtn" onclick="changeDate(-1)">‹</button>
+    <span class="dlbl" id="dlbl"></span>
+    <button class="dbtn" onclick="changeDate(1)">›</button>
+  </div>
+</div>
+
+<!-- サマリー（食事点数） -->
+<div class="summary">
+  <div class="s-top">
+    <div class="tpts">
+      <span class="tbig" id="totalPts">0</span>
+      <span class="tof">/<span id="tgtTotal">20</span>点</span>
+    </div>
+    <span class="badge b-un" id="badge">0点不足</span>
+  </div>
+  <div class="tbar-w"><div class="tbar-f" id="tbar" style="width:0%"></div></div>
+  <div class="gg" id="gg"></div>
+</div>
+
+<!-- ボトムナビ -->
+<div class="bnav">
+  <button class="nb active" id="nav-today" onclick="showPage('today')"><span class="ni">📝</span><span class="nl">今日</span></button>
+  <button class="nb" id="nav-history" onclick="showPage('history')"><span class="ni">📋</span><span class="nl">履歴</span></button>
+  <button class="nb" id="nav-week" onclick="showPage('week')"><span class="ni">📊</span><span class="nl">週間</span></button>
+  <button class="nb" id="nav-cfg" onclick="showPage('cfg')"><span class="ni">⚙️</span><span class="nl">設定</span></button>
+</div>
+
+<!-- ===== 今日ページ（食事＋運動 一画面） ===== -->
+<div class="page active" id="page-today">
+
+  <!-- ⚖️ 体重・体脂肪 -->
+  <div class="sec-hd"><span class="sec-icon">⚖️</span><span class="sec-title">体重・体脂肪</span><span class="sec-line"></span></div>
+
+  <!-- 今日の入力 -->
+  <div class="card">
+    <div class="card-title">今日の記録</div>
+    <div class="igrid" style="margin-bottom:10px">
+      <div class="ig-item">
+        <span class="ig-label">⚖️ 体重（kg）</span>
+        <input class="ig-input" type="number" id="bodyWeight" placeholder="例: 58.5" min="20" max="200" step="0.1">
+      </div>
+      <div class="ig-item">
+        <span class="ig-label">📊 体脂肪率（%）</span>
+        <input class="ig-input" type="number" id="bodyFat" placeholder="例: 22.0" min="1" max="60" step="0.1">
+      </div>
+    </div>
+    <!-- 目標との差表示 -->
+    <div id="bodyDiff" style="display:none;margin-bottom:10px"></div>
+    <button class="abtn" style="background:#005A9C" onclick="saveBodyRecord()">記録する</button>
+  </div>
+
+  <!-- 推移グラフ -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="card-title" style="margin-bottom:0">推移グラフ</div>
+      <div style="display:flex;gap:4px">
+        <button onclick="setChartDays(14)" id="chart-btn-14" style="padding:4px 8px;border:1.5px solid #005A9C;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;background:#005A9C;color:white;font-family:'Noto Sans JP',sans-serif">2週</button>
+        <button onclick="setChartDays(30)" id="chart-btn-30" style="padding:4px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;background:var(--bg);color:var(--sub);font-family:'Noto Sans JP',sans-serif">1ヶ月</button>
+        <button onclick="setChartDays(90)" id="chart-btn-90" style="padding:4px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;background:var(--bg);color:var(--sub);font-family:'Noto Sans JP',sans-serif">3ヶ月</button>
+        <button onclick="setChartDays(0)" id="chart-btn-0" style="padding:4px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;background:var(--bg);color:var(--sub);font-family:'Noto Sans JP',sans-serif">全期間</button>
+      </div>
+    </div>
+    <div id="bodyChart"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 🍽 食事記録 -->
+  <div class="sec-hd"><span class="sec-icon">🍽</span><span class="sec-title">食事記録</span><span class="sec-line"></span></div>
+
+  <!-- グループ選択 -->
+  <div class="gsel">
+    <button class="gsb" onclick="selG(1)" id="gb1">
+      <div class="gsn">第1群</div>
+      <div class="gsname" style="color:var(--g1)">乳・卵</div>
+      <div class="gsex">牛乳・チーズ・ヨーグルト・卵</div>
+    </button>
+    <button class="gsb" onclick="selG(2)" id="gb2">
+      <div class="gsn">第2群</div>
+      <div class="gsname" style="color:var(--g2)">魚・肉・豆</div>
+      <div class="gsex">魚・肉・大豆・豆腐・納豆</div>
+    </button>
+    <button class="gsb" onclick="selG(3)" id="gb3">
+      <div class="gsn">第3群</div>
+      <div class="gsname" style="color:var(--g3)">野菜・芋・果物</div>
+      <div class="gsex">緑黄色野菜・芋・果物・海藻</div>
+    </button>
+    <button class="gsb" onclick="selG(4)" id="gb4">
+      <div class="gsn">第4群</div>
+      <div class="gsname" style="color:var(--g4)">穀物・油・砂糖</div>
+      <div class="gsex">ご飯・パン・麺・油・砂糖</div>
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">よく使う食品</div>
+    <div class="qfs" id="qfs"><span style="font-size:11px;color:var(--sub)">グループを選択してください</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">食品名と点数（1点＝80kcal）</div>
+
+    <!-- 動的入力行コンテナ -->
+    <div id="foodRows"></div>
+
+    <!-- 行追加ボタン -->
+    <button onclick="addFoodRow()" style="width:100%;padding:8px;border:1.5px dashed var(--border);border-radius:10px;background:none;font-family:'Noto Sans JP',sans-serif;font-size:12px;color:var(--sub);cursor:pointer;margin-bottom:4px">＋ 枠を追加する</button>
+  </div>
+  <button class="abtn abtn-food" id="abtn" onclick="addRec()" disabled style="margin-bottom:14px">グループを選択してください</button>
+
+  <!-- 本日の食事記録 -->
+  <div class="card">
+    <div class="card-title">本日の食事記録</div>
+    <div id="food-list-today"><div class="empty-msg">まだ食事の記録がありません</div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 🏃 有酸素運動 -->
+  <div class="sec-hd"><span class="sec-icon">🏃</span><span class="sec-title">有酸素運動</span><span class="sec-line"></span></div>
+
+  <!-- 心拍数ガイド -->
+  <div class="card">
+    <div class="card-title">目安心拍数（運動強度40〜50%）</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:12px;color:var(--sub)">年齢：</span>
+      <input type="number" id="ageInput" style="width:60px;padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:14px;text-align:center;outline:none;background:var(--bg)" placeholder="40" min="10" max="90" oninput="calcHR();saveAge()">
+      <span style="font-size:12px;color:var(--sub)">歳</span>
+    </div>
+    <div class="hr-guide" id="hrGuide">
+      <div class="hr-t">🫀 目安心拍数</div>
+      <div class="hr-row"><span>年齢を入力すると自動計算されます</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">有酸素運動を記録</div>
+    <input type="text" class="fi" id="cardio-name" placeholder="種目（例：ウォーキング・ジョギング）">
+    <div class="igrid">
+      <div class="ig-item">
+        <span class="ig-label">⏱ 運動時間（分）</span>
+        <input class="ig-input" type="number" id="cardio-min" placeholder="30" min="1" max="300">
+      </div>
+      <div class="ig-item">
+        <span class="ig-label">🫀 実測心拍数（bpm）</span>
+        <input class="ig-input" type="number" id="cardio-hr" placeholder="任意">
+      </div>
+    </div>
+    <button class="abtn" style="background:var(--cardio)" onclick="addExCardio()">有酸素運動を記録する</button>
+  </div>
+
+  <!-- 本日の有酸素記録 -->
+  <div class="card">
+    <div class="card-title">本日の有酸素記録</div>
+    <div id="cardio-list-today"><div class="empty-msg">まだ記録がありません</div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 💪 筋トレ -->
+  <div class="sec-hd"><span class="sec-icon">💪</span><span class="sec-title">筋トレ</span><span class="sec-line"></span></div>
+
+  <div class="card">
+    <div class="card-title">筋トレを記録</div>
+    <input type="text" class="fi" id="muscle-name" placeholder="種目（例：スクワット・腕立て伏せ）">
+    <div class="igrid">
+      <div class="ig-item">
+        <span class="ig-label">回数（1セット）</span>
+        <input class="ig-input" type="number" id="muscle-reps" placeholder="10" min="1" max="100">
+      </div>
+      <div class="ig-item">
+        <span class="ig-label">セット数</span>
+        <input class="ig-input" type="number" id="muscle-sets" placeholder="3" min="1" max="20">
+      </div>
+      <div class="ig-item">
+        <span class="ig-label">重量（kg・自重は0）</span>
+        <input class="ig-input" type="number" id="muscle-kg" placeholder="0" min="0" max="300" step="0.5">
+      </div>
+      <div class="ig-item">
+        <span class="ig-label">メモ（任意）</span>
+        <input class="ig-input" type="text" id="muscle-memo" placeholder="フォームなど">
+      </div>
+    </div>
+    <button class="abtn" style="background:var(--muscle)" onclick="addExMuscle()">筋トレを記録する</button>
+  </div>
+
+  <!-- 本日の筋トレ記録 -->
+  <div class="card" style="margin-bottom:4px">
+    <div class="card-title">本日の筋トレ記録</div>
+    <div id="muscle-list-today"><div class="empty-msg">まだ記録がありません</div></div>
+  </div>
+
+</div><!-- /page-today -->
+
+<!-- ===== 履歴ページ ===== -->
+<div class="page" id="page-history">
+  <div class="sec-hd" style="margin-top:4px"><span class="sec-icon">📋</span><span class="sec-title">記録一覧</span><span class="sec-line"></span></div>
+  <div id="history-list"></div>
+</div>
+
+<!-- ===== 週間ページ ===== -->
+<div class="page" id="page-week">
+  <div class="sec-hd" style="margin-top:4px"><span class="sec-icon">📊</span><span class="sec-title">週間レポート</span><span class="sec-line"></span></div>
+  <div class="card">
+    <div class="card-title">過去7日間の合計点数</div>
+    <div class="wbars" id="wbars"></div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--sub);padding:0 2px" id="wdays"></div>
+  </div>
+  <div class="card" id="wdetail"></div>
+  <div class="card" id="wex"></div>
+
+  <!-- シェアボタン -->
+  <button onclick="showShare()" style="width:100%;padding:13px;background:linear-gradient(135deg,#005A9C,#5B9E6B);color:white;border:none;border-radius:11px;font-family:'Noto Sans JP',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:4px">
+    📤 シェア用まとめを作る
+  </button>
+</div>
+
+<!-- ===== シェアページ ===== -->
+<div class="page" id="page-share">
+  <div style="display:flex;align-items:center;gap:8px;margin:8px 0 12px">
+    <button onclick="showPage('week')" style="background:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-family:'Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;color:var(--sub)">← 戻る</button>
+    <span style="font-size:13px;font-weight:700">スクショしてシェア</span>
+  </div>
+
+  <!-- シェアカード本体（スクショ対象） -->
+  <div id="shareCard" style="background:white;border-radius:16px;padding:18px;box-shadow:0 4px 24px rgba(0,0,0,0.1);margin-bottom:12px">
+
+    <!-- ヘッダー -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid #F0EDE8">
+      <div>
+        <div style="font-family:'DM Serif Display',serif;font-size:16px;color:#005A9C">食トレ＆運動記録</div>
+        <div id="share-period" style="font-size:11px;color:#999;margin-top:2px"></div>
+      </div>
+      <div style="font-size:10px;color:#999;text-align:right">背骨コンディショニング協会<br>食トレコンディショニング</div>
+    </div>
+
+    <!-- 食事点数サマリー -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:8px;letter-spacing:0.5px">🍽 今週の食事</div>
+      <div id="share-food-summary"></div>
+    </div>
+
+    <!-- 日別グラフ -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:8px">📊 日別点数</div>
+      <div id="share-daily-bars" style="display:flex;align-items:flex-end;gap:4px;height:70px"></div>
+      <div id="share-daily-days" style="display:flex;justify-content:space-between;font-size:9px;color:#999;margin-top:4px;padding:0 1px"></div>
+    </div>
+
+    <!-- 4群バランス -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:8px">🎯 4群バランス</div>
+      <div id="share-group-bars"></div>
+    </div>
+
+    <!-- 運動サマリー -->
+    <div id="share-ex-wrap">
+      <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:8px">💪 今週の運動</div>
+      <div id="share-ex-summary" style="display:flex;gap:8px"></div>
+    </div>
+
+    <!-- フッター -->
+    <div style="margin-top:14px;padding-top:10px;border-top:1px solid #F0EDE8;text-align:center;font-size:10px;color:#bbb">
+      食トレ＆運動記録アプリ｜背骨コンディショニング協会
+    </div>
+  </div>
+
+  <div style="background:#EEF7F1;border-radius:12px;padding:12px 14px;font-size:12px;color:#2E7D32;line-height:1.7;margin-bottom:4px">
+    📱 <strong>スクショの方法</strong><br>
+    iPhone：サイドボタン＋音量ボタンを同時押し<br>
+    Android：電源ボタン＋音量ダウンを同時押し<br>
+    <span style="color:#999;font-size:11px">シェアカード全体が画面に入るようスクロールしてご利用ください</span>
+  </div>
+</div>
+
+<!-- ===== 設定ページ ===== -->
+<div class="page" id="page-cfg">
+  <div class="sec-hd" style="margin-top:4px"><span class="sec-icon">🎯</span><span class="sec-title">目標点数</span><span class="sec-line"></span></div>
+  <div class="card">
+    <div class="sr"><span class="slabel"><span class="sdot" style="background:var(--g1)"></span>第1群（乳・卵）</span><input class="sinput" id="s1" type="number" value="3" min="1" max="10"></div>
+    <div class="sr"><span class="slabel"><span class="sdot" style="background:var(--g2)"></span>第2群（魚・肉・豆）</span><input class="sinput" id="s2" type="number" value="3" min="1" max="10"></div>
+    <div class="sr"><span class="slabel"><span class="sdot" style="background:var(--g3)"></span>第3群（野菜・芋）</span><input class="sinput" id="s3" type="number" value="3" min="1" max="10"></div>
+    <div class="sr"><span class="slabel"><span class="sdot" style="background:var(--g4)"></span>第4群（穀物・油）</span><input class="sinput" id="s4" type="number" value="11" min="1" max="20"></div>
+    <div class="prow">
+      <button class="pbtn" onclick="preset(3,3,3,11)">標準20点</button>
+      <button class="pbtn" onclick="preset(4,4,4,13)">多め25点</button>
+      <button class="pbtn" onclick="preset(2,2,2,9)">少なめ15点</button>
+    </div>
+  </div>
+  <button class="savebtn" onclick="saveCfg()" style="margin-bottom:8px">設定を保存する</button>
+  <div class="toast" id="toast">✅ 保存しました！</div>
+
+  <div class="sec-hd" style="margin-top:12px"><span class="sec-icon">⚖️</span><span class="sec-title">目標体重・体脂肪</span><span class="sec-line"></span></div>
+  <div class="card">
+    <div class="sr">
+      <span class="slabel">🎯 目標体重（kg）</span>
+      <input class="sinput" id="tgtWeight" type="number" placeholder="60" min="20" max="200" step="0.1">
+    </div>
+    <div class="sr">
+      <span class="slabel">🎯 目標体脂肪率（%）</span>
+      <input class="sinput" id="tgtFat" type="number" placeholder="20" min="1" max="60" step="0.1">
+    </div>
+    <button class="savebtn" onclick="saveBodyCfg()" style="margin-top:8px">目標を保存する</button>
+    <div class="toast" id="bodyToast" style="display:none">✅ 保存しました！</div>
+  </div>
+
+  <div class="sec-hd" style="margin-top:12px"><span class="sec-icon">🔢</span><span class="sec-title">よく使う点数を編集</span><span class="sec-line"></span></div>
+  <div class="card">
+    <div class="cfood-row">
+      <input class="cfood-input" id="qpInput" type="number" placeholder="点数を入力（例：0.6）" min="0.1" max="2" step="0.1" onkeydown="if(event.key==='Enter')addCustomPt()">
+      <button class="cfood-addbtn" onclick="addCustomPt()" style="background:var(--text)">追加</button>
+    </div>
+    <div class="cfood-list" id="qptsList"></div>
+    <p style="font-size:10px;color:var(--sub);margin-top:8px">✕ を押すと削除。0.1〜2.0の範囲で追加できます。</p>
+  </div>
+
+  <div class="sec-hd" style="margin-top:4px"><span class="sec-icon">🍱</span><span class="sec-title">よく使う食品を編集</span><span class="sec-line"></span></div>
+  <div class="card">
+    <div class="cgtabs">
+      <button class="cgtb cg1" onclick="selCfgG(1)" id="cgtb1">第1群</button>
+      <button class="cgtb" onclick="selCfgG(2)" id="cgtb2">第2群</button>
+      <button class="cgtb" onclick="selCfgG(3)" id="cgtb3">第3群</button>
+      <button class="cgtb" onclick="selCfgG(4)" id="cgtb4">第4群</button>
+    </div>
+    <div class="cfood-row">
+      <input class="cfood-input" id="cfoodInput" placeholder="食品名を入力（例：ツナ缶）" onkeydown="if(event.key==='Enter')addCustomFood()">
+      <button class="cfood-addbtn" id="cfoodAddBtn" onclick="addCustomFood()" style="background:var(--g1)">追加</button>
+    </div>
+    <div class="cfood-list" id="cfoodList"></div>
+    <p style="font-size:10px;color:var(--sub);margin-top:8px">✕ を押すと削除。変更は自動保存されます。</p>
+  </div>
+
+  <div class="sec-hd" style="margin-top:4px"><span class="sec-icon">ℹ️</span><span class="sec-title">食トレコンディショニングとは</span><span class="sec-line"></span></div>
+  <div class="card" style="margin-bottom:4px">
+    <p style="font-size:12px;color:var(--sub);line-height:1.9">食トレコンディショニングは、背骨コンディショニング協会が推進する「食と運動」の健康プログラムです。4群点数法を活用し、食品を4つのグループに分けて1点＝80kcalで管理します。各群をバランスよく摂ることで、薬や極端な食事制限に頼らず生活習慣病の予防・改善を目指します。</p>
+  </div>
+</div>
+
+<!-- 点数選択ポップアップ -->
+<div class="pts-popup-overlay" id="ptsOverlay" onclick="closePtsPopup(event)">
+  <div class="pts-popup" id="ptsPopup">
+    <div class="pts-popup-title" id="ptsPopupTitle">点数を選択</div>
+    <div class="pts-popup-grid" id="ptsPopupGrid"></div>
+    <!-- 追加ボタンエリア -->
+    <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;background:#F5F3EF;border-radius:10px;padding:10px 12px">
+      <span style="font-size:11px;color:var(--sub);white-space:nowrap">一覧に追加：</span>
+      <input type="number" id="popupAddInput" min="0.1" max="10" step="0.1"
+        style="flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:14px;text-align:center;outline:none;background:white"
+        placeholder="例: 3.4"
+        onkeydown="if(event.key==='Enter')addFromPopup()">
+      <button onclick="addFromPopup()"
+        style="padding:7px 14px;background:var(--text);color:white;border:none;border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">
+        追加
+      </button>
+    </div>
+    <button class="pts-popup-close" onclick="closePtsPopupDirect()">閉じる</button>
+  </div>
+</div>
+
+<!-- 詳細ポップアップ（曜日・群共通） -->
+<div class="pts-popup-overlay" id="detailOverlay" onclick="closeDetailPopup(event)">
+  <div class="pts-popup" id="detailPopup" style="max-height:75vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <span class="pts-popup-title" id="detailTitle" style="margin-bottom:0;text-align:left;font-size:14px;font-weight:700;color:var(--text)"></span>
+      <button onclick="closeDetailDirect()" style="background:none;border:none;font-size:18px;color:var(--sub);cursor:pointer;padding:2px 6px">✕</button>
+    </div>
+    <div id="detailBody"></div>
+  </div>
+</div>
+
+<script>
+const RK='sc_rec_v1',SK='sc_set_v1',CFK='sc_cf_v1',EK='sc_ex_v1',QPK='sc_qp_v1',BRK='sc_body_v1',BCK='sc_bodycfg_v1';
+let bodyRecs={},bodyCfg={tgtWeight:'',tgtFat:''};
+const DEFAULT_QP=[0.1,0.2,0.3,0.5,0.6,0.8,1.0,2.0,2.5,3.0,3.5,4.0];
+let QP=[...DEFAULT_QP];
+const GI={1:{name:'乳・卵',c:'#E8745A'},2:{name:'魚・肉・豆',c:'#5B9E6B'},3:{name:'野菜・芋',c:'#E8B84B'},4:{name:'穀物・油',c:'#6B8FCC'}};
+const DQF={1:['牛乳','ヨーグルト','チーズ','卵','スキムミルク'],2:['魚','鶏肉','豚肉','牛肉','豆腐','納豆'],3:['緑黄色野菜','じゃがいも','さつまいも','果物','海藻'],4:['ご飯','パン','うどん','パスタ','油','砂糖']};
+let QF={1:[...DQF[1]],2:[...DQF[2]],3:[...DQF[3]],4:[...DQF[4]]};
+let cd=new Date(),sg=null,cp=1,recs={},cfg={t1:3,t2:3,t3:3,t4:11},cfgG=1,exRecs={};
+
+function init(){
+  try{const s=localStorage.getItem(RK);if(s)recs=JSON.parse(s);}catch(e){}
+  try{const s=localStorage.getItem(SK);if(s)cfg={...cfg,...JSON.parse(s)};}catch(e){}
+  try{const s=localStorage.getItem(CFK);if(s){const cf=JSON.parse(s);[1,2,3,4].forEach(g=>{if(cf[g])QF[g]=cf[g];});}}catch(e){}
+  try{const s=localStorage.getItem(EK);if(s)exRecs=JSON.parse(s);}catch(e){}
+  try{const s=localStorage.getItem(QPK);if(s)QP=JSON.parse(s);}catch(e){}
+  try{const s=localStorage.getItem(BRK);if(s)bodyRecs=JSON.parse(s);}catch(e){}
+  try{const s=localStorage.getItem(BCK);if(s)bodyCfg={...bodyCfg,...JSON.parse(s)};}catch(e){}
+  document.getElementById('s1').value=cfg.t1;
+  document.getElementById('s2').value=cfg.t2;
+  document.getElementById('s3').value=cfg.t3;
+  document.getElementById('s4').value=cfg.t4;
+  try{const age=localStorage.getItem('sc_age');if(age){document.getElementById('ageInput').value=age;calcHR();}}catch(e){}
+  // 目標体重・体脂肪を設定欄に反映
+  if(bodyCfg.tgtWeight)document.getElementById('tgtWeight').value=bodyCfg.tgtWeight;
+  if(bodyCfg.tgtFat)document.getElementById('tgtFat').value=bodyCfg.tgtFat;
+  // 今日の体重・体脂肪を入力欄に反映
+  const todayBody=bodyRecs[dk(new Date())];
+  if(todayBody){
+    if(todayBody.w)document.getElementById('bodyWeight').value=todayBody.w;
+    if(todayBody.f)document.getElementById('bodyFat').value=todayBody.f;
+  }
+  updDate();renderAll();renderQptsList();renderFoodRows();focusRow(0);
+}
+
+function dk(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function fmtDate(d){
+  const dy=['日','月','火','水','木','金','土'],t=new Date(),y=new Date(t);y.setDate(t.getDate()-1);
+  const k=dk(d);
+  if(k===dk(t))return`今日（${dy[d.getDay()]}）`;
+  if(k===dk(y))return`昨日（${dy[d.getDay()]}）`;
+  return`${d.getMonth()+1}/${d.getDate()}（${dy[d.getDay()]}）`;
+}
+function updDate(){document.getElementById('dlbl').textContent=fmtDate(cd);}
+function changeDate(n){cd=new Date(cd);cd.setDate(cd.getDate()+n);updDate();renderAll();}
+function getTgt(){return cfg.t1+cfg.t2+cfg.t3+cfg.t4;}
+function getTodayRecs(){return recs[dk(cd)]||[];}
+function getGT(rs){const t={1:0,2:0,3:0,4:0};(rs||[]).forEach(r=>{t[r.g]=(t[r.g]||0)+r.p;});return t;}
+function getTodayEx(){return exRecs[dk(cd)]||[];}
+
+function renderAll(){
+  renderSum();renderFoodToday();renderExToday();renderCfoodList();renderQuickPts();renderBodyChart();renderBodyDiff();
+}
+
+function renderQuickPts(){
+  const el=document.getElementById('quickPtsBtns');if(!el)return;
+  const sorted=[...QP].sort((a,b)=>a-b);
+  el.innerHTML=sorted.map(v=>`<button class="qfb" onclick="setPts(${v})">${v%1===0?v:v.toFixed(1)}</button>`).join('');
+}
+function renderQptsList(){
+  const el=document.getElementById('qptsList');if(!el)return;
+  const sorted=[...QP].sort((a,b)=>a-b);
+  if(!sorted.length){el.innerHTML='<span style="font-size:11px;color:var(--sub)">点数がありません</span>';return;}
+  el.innerHTML=sorted.map((v,i)=>`<span class="cfood-tag" style="background:#F0EDE8;color:var(--text)">${v%1===0?v:v.toFixed(1)}<button class="cfood-del" onclick="delCustomPt(${i})" style="color:var(--sub)">✕</button></span>`).join('');
+}
+function addCustomPt(){
+  const inp=document.getElementById('qpInput');
+  const val=Math.round(parseFloat(inp.value)*10)/10;
+  if(isNaN(val)||val<0.1||val>2){alert('0.1〜2.0の範囲で入力してください');return;}
+  if(!QP.includes(val)){QP.push(val);saveQP();}
+  inp.value='';renderQuickPts();renderQptsList();
+}
+function delCustomPt(idx){
+  const sorted=[...QP].sort((a,b)=>a-b);
+  const val=sorted[idx];
+  QP=QP.filter(v=>v!==val);
+  saveQP();renderQuickPts();renderQptsList();
+}
+function saveQP(){try{localStorage.setItem(QPK,JSON.stringify(QP));}catch(e){}}
+
+// サマリー
+function renderSum(){
+  const rs=getTodayRecs(),gt=getGT(rs),totalRaw=Object.values(gt).reduce((a,b)=>a+b,0),tgt=getTgt();
+  const total=Math.round(totalRaw*100)/100;
+  document.getElementById('totalPts').textContent=total%1===0?total:total.toFixed(2);
+  document.getElementById('tgtTotal').textContent=tgt;
+  document.getElementById('tbar').style.width=Math.min(100,(total/tgt)*100)+'%';
+  const b=document.getElementById('badge'),diff=Math.round((total-tgt)*100)/100;
+  if(diff>0){b.className='badge b-ov';b.textContent=`${diff.toFixed(2)}点オーバー`;}
+  else if(diff===0&&total>0){b.className='badge b-ok';b.textContent='目標達成！';}
+  else{b.className='badge b-un';b.textContent=`${Math.abs(diff).toFixed(2)}点不足`;}
+  const tgts=[cfg.t1,cfg.t2,cfg.t3,cfg.t4],gg=document.getElementById('gg');gg.innerHTML='';
+  [1,2,3,4].forEach(g=>{
+    const curRaw=gt[g]||0,cur=Math.round(curRaw*100)/100,t=tgts[g-1],r=23,circ=2*Math.PI*r,off=circ-Math.min(1,cur/t)*circ;
+    const curStr=cur%1===0?cur:cur.toFixed(2);
+    gg.innerHTML+=`<div class="gc" onclick="openGroupDetail(${g})" style="cursor:pointer"><div class="rw"><svg width="54" height="54" viewBox="0 0 54 54"><circle cx="27" cy="27" r="${r}" fill="none" stroke="#F0EDE8" stroke-width="5"/><circle cx="27" cy="27" r="${r}" fill="none" stroke="${GI[g].c}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}" style="transform:rotate(-90deg);transform-origin:27px 27px;transition:stroke-dashoffset .5s"/></svg><span class="rnum">${curStr}</span></div><span class="gname">${GI[g].name}</span><span class="gtgt">/${t}点</span></div>`;
+  });
+}
+
+// 食事（動的行入力）
+let cpArr=[1,1,1];
+let activeRow=0;
+let rowCount=3;
+const NUMS=['①','②','③','④','⑤','⑥','⑦','⑧'];
+
+function getMaxPts(){return sg===4?10:2;}
+
+function renderFoodRows(){
+  const container=document.getElementById('foodRows');
+  container.innerHTML='';
+  for(let i=0;i<rowCount;i++){
+    const isLast=i===rowCount-1;
+    const div=document.createElement('div');
+    div.className='food-row';
+    div.id=`frow${i}`;
+    div.style.cssText=`display:flex;gap:6px;align-items:center;margin-bottom:6px;opacity:${i===activeRow?1:0.75}`;
+    div.innerHTML=`
+      <span style="font-size:10px;color:var(--sub);width:16px;text-align:center;flex-shrink:0">${NUMS[i]||i+1}</span>
+      <input type="text" class="fi" id="fname${i}" placeholder="${i===0?'食品名':'食品名（任意）'}" style="margin-bottom:0;flex:1" onfocus="focusRow(${i})">
+      <div style="display:flex;align-items:center;gap:2px;flex-shrink:0">
+        <button onclick="openPtsPopup(${i})" style="min-width:56px;padding:8px 10px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;cursor:pointer;color:var(--text);text-align:center" id="pvbtn${i}">${(cpArr[i]||1)%1===0?(cpArr[i]||1):(cpArr[i]||1).toFixed(2)}</button>
+        ${rowCount>1?`<button onclick="removeFoodRow(${i})" style="background:none;border:none;color:#CCC;cursor:pointer;font-size:14px;padding:4px;line-height:1">✕</button>`:''}
+      </div>`;
+    container.appendChild(div);
+  }
+}
+
+function addFoodRow(){
+  if(rowCount>=8)return;
+  cpArr.push(1);
+  rowCount++;
+  renderFoodRows();
+  focusRow(rowCount-1);
+  document.getElementById(`fname${rowCount-1}`).focus();
+}
+
+function removeFoodRow(i){
+  if(rowCount<=1)return;
+  cpArr.splice(i,1);
+  rowCount--;
+  if(activeRow>=rowCount)activeRow=rowCount-1;
+  renderFoodRows();
+  updBtn();
+}
+
+function focusRow(i){
+  activeRow=i;
+  for(let r=0;r<rowCount;r++){
+    const el=document.getElementById(`frow${r}`);
+    if(el)el.style.opacity=r===i?'1':'0.75';
+  }
+}
+
+function initRowFocus(){
+  // renderFoodRowsで動的生成するためここでは不要
+}
+
+function selG(g){
+  sg=g;
+  [1,2,3,4].forEach(i=>{document.getElementById(`gb${i}`).className='gsb';});
+  document.getElementById(`gb${g}`).classList.add(`s${g}`);
+  document.getElementById('qfs').innerHTML=QF[g].map(f=>`<button class="qfb" onclick="selFood('${f}')">${f}</button>`).join('');
+  // 第4群選択時は点数上限を更新
+  for(let i=0;i<rowCount;i++){
+    if(cpArr[i]>getMaxPts())cpArr[i]=getMaxPts();
+  }
+  renderFoodRows();
+  updBtn();
+}
+
+function selFood(n){
+  let target=activeRow;
+  for(let i=0;i<rowCount;i++){
+    if(!document.getElementById(`fname${i}`).value.trim()){target=i;break;}
+  }
+  document.getElementById(`fname${target}`).value=n;
+  focusRow(target);
+  updBtn();
+}
+
+function stpRow(row,d){
+  focusRow(row);
+  const max=getMaxPts();
+  cpArr[row]=Math.round(Math.max(0.1,Math.min(max,(cpArr[row]||1)+d))*100)/100;
+  const el=document.getElementById(`pvbtn${row}`);
+  if(el)el.textContent=cpArr[row]%1===0?cpArr[row]:cpArr[row].toFixed(2);
+  updBtn();
+}
+
+function setPts(v){
+  const max=getMaxPts();
+  const val=Math.min(v,max);
+  cpArr[activeRow]=val;
+  const el=document.getElementById(`pvbtn${activeRow}`);
+  if(el)el.textContent=val%1===0?val:val.toFixed(2);
+  updBtn();
+}
+
+function stp(d){stpRow(activeRow,d);}
+
+// 点数ポップアップ
+let popupRow=0;
+function openPtsPopup(row){
+  focusRow(row);
+  popupRow=row;
+  const max=getMaxPts();
+  const cur=cpArr[row]||1;
+  document.getElementById('ptsPopupTitle').textContent=
+    `${NUMS[row]||row+1} 点数を選択（最大${max}点）`;
+  document.getElementById('popupAddInput').value='';
+  refreshPopupGrid(cur,max);
+  document.getElementById('ptsOverlay').classList.add('open');
+}
+function refreshPopupGrid(cur,max){
+  const sorted=[...QP].filter(v=>v<=max).sort((a,b)=>a-b);
+  document.getElementById('ptsPopupGrid').innerHTML=sorted.map(v=>{
+    const label=v%1===0?v:v.toFixed(2);
+    const isSel=Math.abs(v-(cur||cpArr[popupRow]||1))<0.001;
+    return`<button class="pts-popup-btn${isSel?' selected':''}" onclick="selectPtsFromPopup(${v})">${label}</button>`;
+  }).join('');
+}
+function addFromPopup(){
+  const inp=document.getElementById('popupAddInput');
+  const val=Math.round(parseFloat(inp.value)*100)/100;
+  if(isNaN(val)||val<0.1||val>10){
+    inp.style.borderColor='#E55';
+    setTimeout(()=>inp.style.borderColor='',1000);
+    return;
+  }
+  if(!QP.includes(val)){
+    QP.push(val);
+    saveQP();
+    renderQuickPts();
+    renderQptsList();
+  }
+  inp.value='';
+  const max=getMaxPts();
+  refreshPopupGrid(null,max);
+  // 追加した点数を選択状態にしてボタンをフラッシュ
+  if(val<=max){
+    selectPtsFromPopup(val);
+  }
+}
+function selectPtsFromPopup(v){
+  cpArr[popupRow]=v;
+  const el=document.getElementById(`pvbtn${popupRow}`);
+  if(el){
+    el.textContent=v%1===0?v:v.toFixed(2);
+    el.style.background='#1E1E1E';
+    el.style.color='white';
+    setTimeout(()=>{el.style.background='';el.style.color='';},500);
+  }
+  updBtn();
+  document.getElementById('ptsOverlay').classList.remove('open');
+}
+function closePtsPopup(e){
+  if(e.target===document.getElementById('ptsOverlay'))
+    document.getElementById('ptsOverlay').classList.remove('open');
+}
+function closePtsPopupDirect(){
+  document.getElementById('ptsOverlay').classList.remove('open');
+}
+
+function updBtn(){
+  const b=document.getElementById('abtn');
+  const hasAny=Array.from({length:rowCount},(_,i)=>i).some(i=>{
+    const el=document.getElementById(`fname${i}`);return el&&el.value.trim();
+  });
+  if(!sg){b.disabled=true;b.textContent='グループを選択してください';}
+  else if(!hasAny){b.disabled=true;b.textContent='食品名を入力してください';}
+  else{
+    const max=getMaxPts();
+    b.disabled=false;
+    b.textContent=sg===4?`第${sg}群に記録する（最大${max}点）`:`第${sg}群に記録する`;
+  }
+}
+
+function addRec(){
+  if(!sg)return;
+  const k=dk(cd);if(!recs[k])recs[k]=[];
+  const t=new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
+  let added=0;
+  for(let i=0;i<rowCount;i++){
+    const el=document.getElementById(`fname${i}`);
+    const n=el?el.value.trim():'';
+    if(!n)continue;
+    recs[k].push({id:Date.now()+i,g:sg,n,p:cpArr[i]||1,t});
+    added++;
+  }
+  if(!added)return;
+  saveRecs();renderSum();renderFoodToday();
+  // リセット
+  cpArr=Array(rowCount).fill(1);
+  rowCount=3;cpArr=[1,1,1];activeRow=0;
+  renderFoodRows();focusRow(0);updBtn();
+}
+function saveRecs(){try{localStorage.setItem(RK,JSON.stringify(recs));}catch(e){}}
+function renderFoodToday(){
+  const rs=getTodayRecs(),el=document.getElementById('food-list-today');
+  if(!rs.length){el.innerHTML='<div class="empty-msg">まだ食事の記録がありません</div>';return;}
+  el.innerHTML='<div class="rec-list">'+[...rs].reverse().map(r=>
+    `<div class="ri"><span class="rdot" style="background:${GI[r.g].c}"></span><div class="rinfo"><div class="rname">${r.n}</div><div class="rmeta">第${r.g}群 · ${r.t||''}</div></div><span class="rpts">${r.p}</span><button class="rdel" onclick="delRec(${r.id})">✕</button></div>`
+  ).join('')+'</div>';
+}
+function delRec(id){
+  const k=dk(cd);if(!recs[k])return;
+  recs[k]=recs[k].filter(r=>r.id!==id);saveRecs();renderSum();renderFoodToday();
+}
+
+// 有酸素
+function calcHR(){
+  const age=parseInt(document.getElementById('ageInput').value)||0,el=document.getElementById('hrGuide');
+  if(!age||age<10){el.innerHTML=`<div class="hr-t">🫀 目安心拍数</div><div class="hr-row"><span>年齢を入力すると計算されます</span></div>`;return;}
+  const maxHR=220-age,restHR=60,lo=Math.round(restHR+(maxHR-restHR)*.4),hi=Math.round(restHR+(maxHR-restHR)*.5);
+  el.innerHTML=`<div class="hr-t">🫀 ${age}歳・運動強度40〜50%</div><div class="hr-row"><span>最大心拍数の目安：</span><span class="hr-val">${maxHR} bpm</span></div><div class="hr-row"><span>目標心拍数ゾーン：</span><span class="hr-val">${lo}〜${hi} bpm</span></div><div class="hr-row" style="margin-top:3px;font-size:10px"><span style="color:var(--sub)">※背骨コンディショニング推奨：軽めの有酸素運動</span></div>`;
+}
+function saveAge(){
+  const age=document.getElementById('ageInput').value;
+  try{localStorage.setItem('sc_age',age);}catch(e){}
+}
+function saveExRecs(){try{localStorage.setItem(EK,JSON.stringify(exRecs));}catch(e){}}
+function addExCardio(){
+  const name=document.getElementById('cardio-name').value.trim()||'有酸素運動';
+  const min=parseInt(document.getElementById('cardio-min').value)||0;
+  const hr=parseInt(document.getElementById('cardio-hr').value)||null;
+  if(!min){alert('運動時間を入力してください');return;}
+  const k=dk(cd);if(!exRecs[k])exRecs[k]=[];
+  exRecs[k].push({id:Date.now(),type:'cardio',name,min,hr,t:new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})});
+  saveExRecs();renderExToday();
+  document.getElementById('cardio-name').value='';
+  document.getElementById('cardio-min').value='';
+  document.getElementById('cardio-hr').value='';
+}
+function addExMuscle(){
+  const name=document.getElementById('muscle-name').value.trim()||'筋トレ';
+  const sets=parseInt(document.getElementById('muscle-sets').value)||0;
+  const reps=parseInt(document.getElementById('muscle-reps').value)||0;
+  const kg=parseFloat(document.getElementById('muscle-kg').value);
+  const memo=document.getElementById('muscle-memo').value.trim();
+  if(!sets||!reps){alert('セット数と回数を入力してください');return;}
+  const k=dk(cd);if(!exRecs[k])exRecs[k]=[];
+  exRecs[k].push({id:Date.now(),type:'muscle',name,sets,reps,kg:isNaN(kg)?0:kg,memo,t:new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})});
+  saveExRecs();renderExToday();
+  document.getElementById('muscle-name').value='';
+  document.getElementById('muscle-sets').value='';
+  document.getElementById('muscle-reps').value='';
+  document.getElementById('muscle-kg').value='';
+  document.getElementById('muscle-memo').value='';
+}
+function renderExToday(){
+  const rs=getTodayEx();
+  const cardios=rs.filter(r=>r.type==='cardio');
+  const muscles=rs.filter(r=>r.type==='muscle');
+  const cel=document.getElementById('cardio-list-today');
+  const mel=document.getElementById('muscle-list-today');
+  if(!cardios.length){cel.innerHTML='<div class="empty-msg">まだ記録がありません</div>';}
+  else{cel.innerHTML='<div class="rec-list">'+[...cardios].reverse().map(r=>{const hrStr=r.hr?` · 心拍数${r.hr}bpm`:'';return`<div class="ri"><div class="ex-icon-b" style="background:var(--cardiob)">🏃</div><div class="rinfo"><div class="rname">${r.name}</div><div class="rmeta">${r.min}分${hrStr} · ${r.t}</div></div><button class="rdel" onclick="delEx(${r.id})">✕</button></div>`;}).join('')+'</div>';}
+  if(!muscles.length){mel.innerHTML='<div class="empty-msg">まだ記録がありません</div>';}
+  else{mel.innerHTML='<div class="rec-list">'+[...muscles].reverse().map(r=>{const kgStr=r.kg>0?` · ${r.kg}kg`:'（自重）';const memo=r.memo?` · ${r.memo}`:'';return`<div class="ri"><div class="ex-icon-b" style="background:var(--muscleb)">💪</div><div class="rinfo"><div class="rname">${r.name}</div><div class="rmeta">${r.sets}セット×${r.reps}回${kgStr}${memo} · ${r.t}</div></div><button class="rdel" onclick="delEx(${r.id})">✕</button></div>`;}).join('')+'</div>';}
+}
+function delEx(id){
+  const k=dk(cd);if(!exRecs[k])return;
+  exRecs[k]=exRecs[k].filter(r=>r.id!==id);saveExRecs();renderExToday();
+}
+
+// 履歴
+function renderHistory(){
+  const el=document.getElementById('history-list');
+  const days=[];
+  for(let i=0;i<14;i++){const d=new Date();d.setDate(d.getDate()-i);days.push(d);}
+  let html='';
+  days.forEach(d=>{
+    const k=dk(d),rs=recs[k]||[],exs=exRecs[k]||[];
+    if(!rs.length&&!exs.length)return;
+    const gt=getGT(rs),total=Object.values(gt).reduce((a,b)=>a+b,0);
+    const cardios=exs.filter(e=>e.type==='cardio'),muscles=exs.filter(e=>e.type==='muscle');
+    html+=`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:13px;font-weight:700">${fmtDate(d)}</span>
+        <span style="font-size:12px;color:var(--sub)">${total}点</span>
+      </div>`;
+    if(rs.length){html+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">`+[1,2,3,4].map(g=>`<span style="font-size:10px;padding:3px 8px;border-radius:12px;background:${GI[g].c}22;color:${GI[g].c};font-weight:700">第${g}群 ${gt[g]||0}点</span>`).join('')+`</div>`;}
+    if(cardios.length){html+=cardios.map(r=>`<div style="font-size:11px;color:var(--sub);padding:2px 0">🏃 ${r.name} ${r.min}分${r.hr?' · 心拍数'+r.hr+'bpm':''}</div>`).join('');}
+    if(muscles.length){html+=muscles.map(r=>`<div style="font-size:11px;color:var(--sub);padding:2px 0">💪 ${r.name} ${r.sets}セット×${r.reps}回${r.kg>0?' · '+r.kg+'kg':'（自重）'}</div>`).join('');}
+    html+=`</div>`;
+  });
+  el.innerHTML=html||'<div class="empty-msg">過去14日間の記録がありません</div>';
+}
+
+// 週間
+function renderWeek(){
+  const tgt=getTgt(),days=['日','月','火','水','木','金','土'];
+  let bhtml='',dhtml='',wdata=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const k=dk(d),rs=recs[k]||[],total=rs.reduce((s,r)=>s+r.p,0);
+    wdata.push({d,k,total,rs});
+    const pct=Math.min(100,(total/tgt)*100),isT=k===dk(new Date());
+    const dayLabel=`${d.getMonth()+1}/${d.getDate()}（${days[d.getDay()]}）`;
+    bhtml+=`<div class="wbw" onclick="openDayDetail('${k}','${dayLabel}')" style="cursor:pointer">
+      <span class="wbpts">${total>0?total:''}</span>
+      <div class="wbbg"><div class="wbf" style="height:${pct}%;opacity:${isT?1:0.55}"></div></div>
+      <span style="font-size:10px;color:${isT?'var(--text)':'var(--sub)'};font-weight:${isT?700:400}">${days[d.getDay()]}</span>
+    </div>`;
+  }
+  document.getElementById('wbars').innerHTML=bhtml;
+  document.getElementById('wdays').innerHTML='';
+  const wt={1:0,2:0,3:0,4:0};
+  wdata.forEach(({rs})=>rs.forEach(r=>{wt[r.g]+=r.p;}));
+  const tgts=[cfg.t1,cfg.t2,cfg.t3,cfg.t4];
+  let dh='<div class="card-title">今週グループ別合計（タップで詳細）</div>';
+  dh+=[1,2,3,4].map(g=>{
+    const t=tgts[g-1]*7,cur=wt[g],pct=Math.min(100,(cur/t)*100);
+    return`<div style="margin-bottom:10px;cursor:pointer" onclick="openWeekGroupDetail(${g})">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+        <span style="color:${GI[g].c};font-weight:700">第${g}群 ${GI[g].name} ▶</span>
+        <span style="color:#999">${cur}/${t}点</span>
+      </div>
+      <div style="background:#F0EDE8;border-radius:4px;height:5px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${GI[g].c};border-radius:4px;transition:width .4s"></div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('wdetail').innerHTML=dh;
+  let totalCardioMin=0,totalMuscle=0;
+  wdata.forEach(({k})=>{const exs=exRecs[k]||[];exs.forEach(e=>{if(e.type==='cardio')totalCardioMin+=e.min;else totalMuscle++;});});
+  document.getElementById('wex').innerHTML=`<div class="card-title">今週の運動合計</div><div style="display:flex;gap:10px"><div style="flex:1;text-align:center;padding:10px;background:var(--cardiob);border-radius:10px"><div style="font-size:10px;color:var(--cardio);font-weight:700;margin-bottom:4px">🏃 有酸素運動</div><div style="font-family:'DM Serif Display',serif;font-size:26px;color:var(--cardio)">${totalCardioMin}</div><div style="font-size:10px;color:var(--sub)">分</div></div><div style="flex:1;text-align:center;padding:10px;background:var(--muscleb);border-radius:10px"><div style="font-size:10px;color:var(--muscle);font-weight:700;margin-bottom:4px">💪 筋トレ</div><div style="font-family:'DM Serif Display',serif;font-size:26px;color:var(--muscle)">${totalMuscle}</div><div style="font-size:10px;color:var(--sub)">セッション</div></div></div>`;
+}
+
+// ===== 体重・体脂肪 =====
+function saveBodyRecord(){
+  const w=parseFloat(document.getElementById('bodyWeight').value);
+  const f=parseFloat(document.getElementById('bodyFat').value);
+  if(isNaN(w)&&isNaN(f)){alert('体重または体脂肪率を入力してください');return;}
+  const k=dk(cd);
+  bodyRecs[k]={w:isNaN(w)?null:w,f:isNaN(f)?null:f};
+  try{localStorage.setItem(BRK,JSON.stringify(bodyRecs));}catch(e){}
+  renderBodyChart();renderBodyDiff();
+  // フラッシュ表示
+  const btn=document.querySelector('.abtn[onclick="saveBodyRecord()"]');
+  if(btn){const orig=btn.textContent;btn.textContent='✅ 記録しました！';btn.style.background='#2E7D32';setTimeout(()=>{btn.textContent=orig;btn.style.background='#005A9C';},1500);}
+}
+
+function saveBodyCfg(){
+  bodyCfg.tgtWeight=document.getElementById('tgtWeight').value;
+  bodyCfg.tgtFat=document.getElementById('tgtFat').value;
+  try{localStorage.setItem(BCK,JSON.stringify(bodyCfg));}catch(e){}
+  renderBodyDiff();renderBodyChart();
+  const t=document.getElementById('bodyToast');t.style.display='block';setTimeout(()=>t.style.display='none',2000);
+}
+
+function renderBodyDiff(){
+  const el=document.getElementById('bodyDiff');if(!el)return;
+  const today=bodyRecs[dk(cd)];
+  if(!today||(today.w==null&&today.f==null)){el.style.display='none';return;}
+  let html='<div style="display:flex;gap:8px;flex-wrap:wrap">';
+  if(today.w!=null&&bodyCfg.tgtWeight){
+    const diff=Math.round((today.w-parseFloat(bodyCfg.tgtWeight))*10)/10;
+    const ok=diff<=0;
+    html+=`<span style="font-size:12px;padding:5px 11px;border-radius:20px;background:${ok?'#E8F5E9':'#FDF1EE'};color:${ok?'#2E7D32':'#E8745A'};font-weight:700">
+      ⚖️ ${today.w}kg　目標まで${ok?'達成！':diff+' kg'}
+    </span>`;
+  }
+  if(today.f!=null&&bodyCfg.tgtFat){
+    const diff=Math.round((today.f-parseFloat(bodyCfg.tgtFat))*10)/10;
+    const ok=diff<=0;
+    html+=`<span style="font-size:12px;padding:5px 11px;border-radius:20px;background:${ok?'#E8F5E9':'#EEF2FB'};color:${ok?'#2E7D32':'#6B8FCC'};font-weight:700">
+      📊 ${today.f}%　目標まで${ok?'達成！':diff+' %'}
+    </span>`;
+  }
+  html+='</div>';
+  el.innerHTML=html;el.style.display='block';
+}
+
+let chartDays=14;
+
+function setChartDays(n){
+  chartDays=n;
+  [14,30,90,0].forEach(d=>{
+    const btn=document.getElementById("chart-btn-"+d);
+    if(!btn)return;
+    const active=d===n;
+    btn.style.background=active?"#005A9C":"var(--bg)";
+    btn.style.color=active?"white":"var(--sub)";
+    btn.style.borderColor=active?"#005A9C":"var(--border)";
+  });
+  renderBodyChart();
+}
+
+function renderBodyChart(){
+  const el=document.getElementById("bodyChart");if(!el)return;
+  let data=[];
+  if(chartDays===0){
+    const allKeys=Object.keys(bodyRecs).sort();
+    if(!allKeys.length){el.innerHTML="<div style=\"font-size:12px;color:var(--sub);text-align:center;padding:12px 0\">記録するとグラフが表示されます</div>";return;}
+    const firstDate=new Date(allKeys[0]);
+    const today=new Date();
+    const diffDays=Math.round((today-firstDate)/(1000*60*60*24));
+    for(let i=diffDays;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=dk(d),b=bodyRecs[k]||{};data.push({d,w:b.w??null,f:b.f??null});}
+  }else{
+    for(let i=chartDays-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=dk(d),b=bodyRecs[k]||{};data.push({d,w:b.w??null,f:b.f??null});}
+  }
+  const hasW=data.some(d=>d.w!=null),hasF=data.some(d=>d.f!=null);
+  if(!hasW&&!hasF){el.innerHTML="<div style=\"font-size:12px;color:var(--sub);text-align:center;padding:12px 0\">記録するとグラフが表示されます</div>";return;}
+  const totalPts=data.length;
+  let html="";
+  function drawChart(key,color,tgtVal,unit,label){
+    const vals=data.map(d=>d[key]).filter(v=>v!=null);
+    if(!vals.length)return"";
+    const tgt=tgtVal?parseFloat(tgtVal):null;
+    const allVals=tgt?[...vals,tgt]:vals;
+    const minV=Math.min(...allVals)-0.5,maxV=Math.max(...allVals)+0.5,H=80,W=320;
+    let h=`<div style="margin-bottom:14px"><div style="font-size:10px;color:var(--sub);font-weight:700;margin-bottom:6px">${label}</div><div style="position:relative;height:${H}px;margin-bottom:4px">`;
+    if(tgt){
+      const tp=Math.max(0,Math.min(H,Math.round((1-(tgt-minV)/(maxV-minV))*H)));
+      h+=`<div style="position:absolute;top:${tp}px;left:0;right:0;height:1.5px;background:${color};opacity:0.5;z-index:1"></div>
+          <div style="position:absolute;top:${Math.max(0,tp-11)}px;right:0;font-size:9px;color:${color};font-weight:700">目標${tgt}${unit}</div>`;
+    }
+    const pts=data.map((d,i)=>{
+      if(d[key]==null)return null;
+      const x=totalPts>1?i/(totalPts-1):0.5;
+      const y=Math.max(0,Math.min(H,(1-(d[key]-minV)/(maxV-minV))*H));
+      return{x,y,v:d[key]};
+    }).filter(p=>p!=null);
+    if(pts.length>=2){
+      h+=`<svg style="position:absolute;inset:0;width:100%;height:${H}px;overflow:visible" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+        <polyline points="${pts.map(p=>`${p.x*W},${p.y}`).join(" ")}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        ${pts.length<=30?pts.map(p=>`<circle cx="${p.x*W}" cy="${p.y}" r="3.5" fill="${color}"/>`).join(""):""}
+      </svg>`;
+    }else if(pts.length===1){
+      h+=`<svg style="position:absolute;inset:0;width:100%;height:${H}px" viewBox="0 0 ${W} ${H}"><circle cx="${W/2}" cy="${pts[0].y}" r="4" fill="${color}"/></svg>`;
+    }
+    const latest=pts[pts.length-1];
+    if(latest)h+=`<div style="position:absolute;top:0;left:0;font-size:12px;font-weight:700;color:${color}">${latest.v}${unit}</div>`;
+    h+=`</div><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--sub)"><span>${minV.toFixed(1)}</span><span>${((minV+maxV)/2).toFixed(1)}</span><span>${maxV.toFixed(1)}</span></div></div>`;
+    return h;
+  }
+  if(hasW)html+=drawChart("w","#005A9C",bodyCfg.tgtWeight,"kg","⚖️ 体重（kg）");
+  if(hasF)html+=drawChart("f","#6B8FCC",bodyCfg.tgtFat,"%","📊 体脂肪率（%）");
+  if(data.length>=2){
+    const midIdx=Math.floor((data.length-1)/2);
+    const fmt=d=>`${d.getMonth()+1}/${d.getDate()}`;
+    html+=`<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--sub);margin-top:4px"><span>${fmt(data[0].d)}</span><span>${fmt(data[midIdx].d)}</span><span>${fmt(data[data.length-1].d)}</span></div>`;
+  }
+  el.innerHTML=html;
+}
+
+// 詳細ポップアップ共通
+function openDetailPopup(title,html){
+  document.getElementById('detailTitle').textContent=title;
+  document.getElementById('detailBody').innerHTML=html;
+  document.getElementById('detailOverlay').classList.add('open');
+}
+function closeDetailPopup(e){
+  if(e.target===document.getElementById('detailOverlay'))
+    document.getElementById('detailOverlay').classList.remove('open');
+}
+function closeDetailDirect(){
+  document.getElementById('detailOverlay').classList.remove('open');
+}
+
+// 曜日バータップ→その日の記録
+function openDayDetail(dateKey,dayLabel){
+  const rs=recs[dateKey]||[];
+  const exs=exRecs[dateKey]||[];
+  const gt=getGT(rs);
+  const total=Math.round(rs.reduce((s,r)=>s+r.p,0)*100)/100;
+  const tgt=getTgt();
+  const diff=Math.round((total-tgt)*100)/100;
+
+  let html='';
+  // 合計バッジ
+  const ok=diff>=0;
+  html+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+    <span style="font-family:'DM Serif Display',serif;font-size:28px">${total}</span>
+    <span style="font-size:11px;color:var(--sub)">/ ${tgt}点</span>
+    <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:${ok?'#E8F5E9':'#EEF2FB'};color:${ok?'#2E7D32':'#3A5FA0'}">${ok?'+'+diff+'点':Math.abs(diff)+'点不足'}</span>
+  </div>`;
+
+  // 群別サマリー
+  html+=`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">`;
+  [1,2,3,4].forEach(g=>{
+    const pts=Math.round((gt[g]||0)*100)/100;
+    const tgtG=[cfg.t1,cfg.t2,cfg.t3,cfg.t4][g-1];
+    const ok=pts>=tgtG;
+    html+=`<span style="font-size:11px;padding:4px 9px;border-radius:12px;background:${GI[g].c}22;color:${GI[g].c};font-weight:700;${ok?'':'opacity:0.6'}">第${g}群 ${pts}点${ok?' ✓':''}</span>`;
+  });
+  html+=`</div>`;
+
+  // 食事一覧
+  if(rs.length){
+    html+=`<div style="font-size:10px;color:var(--sub);font-weight:700;letter-spacing:1px;margin-bottom:6px">🍽 食事</div>`;
+    html+=[...rs].map(r=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">
+        <span style="width:8px;height:8px;border-radius:50%;background:${GI[r.g].c};flex-shrink:0;display:inline-block"></span>
+        <span style="flex:1;font-size:13px">${r.n}</span>
+        <span style="font-size:10px;color:var(--sub)">第${r.g}群</span>
+        <span style="font-weight:700;font-size:14px">${r.p}</span>
+      </div>`).join('');
+  } else {
+    html+=`<div style="font-size:12px;color:var(--sub);padding:8px 0">食事の記録がありません</div>`;
+  }
+
+  // 運動一覧
+  const cardios=exs.filter(e=>e.type==='cardio');
+  const muscles=exs.filter(e=>e.type==='muscle');
+  if(cardios.length||muscles.length){
+    html+=`<div style="font-size:10px;color:var(--sub);font-weight:700;letter-spacing:1px;margin:10px 0 6px">💪 運動</div>`;
+    cardios.forEach(e=>{html+=`<div style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)">🏃 ${e.name} ${e.min}分${e.hr?' · 心拍'+e.hr:''}`;});
+    muscles.forEach(e=>{html+=`<div style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)">💪 ${e.name} ${e.sets}×${e.reps}回${e.kg>0?' · '+e.kg+'kg':''}${e.memo?' · '+e.memo:''}`;});
+  }
+
+  openDetailPopup(dayLabel,html);
+}
+
+// 群リングタップ→今日のその群の記録
+function openGroupDetail(g){
+  const rs=getTodayRecs().filter(r=>r.g===g);
+  const total=Math.round(rs.reduce((s,r)=>s+r.p,0)*100)/100;
+  const tgt=[cfg.t1,cfg.t2,cfg.t3,cfg.t4][g-1];
+  const diff=Math.round((total-tgt)*100)/100;
+  const ok=diff>=0;
+
+  let html=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+    <span style="font-family:'DM Serif Display',serif;font-size:28px;color:${GI[g].c}">${total}</span>
+    <span style="font-size:12px;color:var(--sub)">/ ${tgt}点</span>
+    <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:${ok?'#E8F5E9':'#FDF1EE'};color:${ok?'#2E7D32':GI[g].c}">${ok?'目標達成 ✓':Math.abs(diff).toFixed(2)+'点不足'}</span>
+  </div>`;
+
+  if(!rs.length){
+    html+=`<div style="font-size:12px;color:var(--sub);padding:8px 0">まだ記録がありません</div>`;
+    html+=`<div style="font-size:11px;color:var(--sub);margin-top:8px;line-height:1.7">📌 第${g}群の食品例：${['牛乳・卵・チーズ・ヨーグルト','魚・肉・豆腐・納豆・大豆','野菜・芋・果物・海藻','ご飯・パン・麺・油・砂糖'][g-1]}</div>`;
+  } else {
+    html+=`<div style="font-size:10px;color:var(--sub);font-weight:700;letter-spacing:1px;margin-bottom:6px">今日の第${g}群記録</div>`;
+    html+=rs.map(r=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span style="flex:1;font-size:13px;font-weight:500">${r.n}</span>
+        <span style="font-size:11px;color:var(--sub)">${r.t||''}</span>
+        <span style="font-weight:700;font-size:16px;color:${GI[g].c}">${r.p}</span>
+      </div>`).join('');
+    if(!ok){
+      html+=`<div style="margin-top:10px;padding:8px 10px;background:${GI[g].c}18;border-radius:8px;font-size:11px;color:${GI[g].c};font-weight:700">あと${Math.abs(diff).toFixed(2)}点で目標達成！</div>`;
+    }
+  }
+  openDetailPopup(`第${g}群 ${GI[g].name}`,html);
+}
+
+// 週間グループ別→7日分のその群の記録
+function openWeekGroupDetail(g){
+  const days=['日','月','火','水','木','金','土'];
+  let html='';
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const k=dk(d);
+    const rs=(recs[k]||[]).filter(r=>r.g===g);
+    if(!rs.length)continue;
+    const total=Math.round(rs.reduce((s,r)=>s+r.p,0)*100)/100;
+    const tgt=[cfg.t1,cfg.t2,cfg.t3,cfg.t4][g-1];
+    const ok=total>=tgt;
+    html+=`<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:700">${d.getMonth()+1}/${d.getDate()}（${days[d.getDay()]}）</span>
+        <span style="font-size:12px;color:${ok?'#2E7D32':GI[g].c};font-weight:700">${total}点${ok?' ✓':''}</span>
+      </div>
+      ${rs.map(r=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--sub)"><span>${r.n}</span><span>${r.p}</span></div>`).join('')}
+    </div>`;
+  }
+  if(!html)html=`<div style="font-size:12px;color:var(--sub);padding:8px 0">今週の記録がありません</div>`;
+  openDetailPopup(`週間 第${g}群 ${GI[g].name}`,html);
+}
+function preset(a,b,c,d){document.getElementById('s1').value=a;document.getElementById('s2').value=b;document.getElementById('s3').value=c;document.getElementById('s4').value=d;}
+function saveCfg(){
+  cfg={t1:parseFloat(document.getElementById('s1').value)||3,t2:parseFloat(document.getElementById('s2').value)||3,t3:parseFloat(document.getElementById('s3').value)||3,t4:parseFloat(document.getElementById('s4').value)||11};
+  try{localStorage.setItem(SK,JSON.stringify(cfg));}catch(e){}
+  renderSum();const t=document.getElementById('toast');t.style.display='block';setTimeout(()=>t.style.display='none',2000);
+}
+
+// カスタム食品
+function selCfgG(g){
+  cfgG=g;[1,2,3,4].forEach(i=>{const b=document.getElementById(`cgtb${i}`);b.className='cgtb';if(i===g)b.classList.add(`cg${g}`);});
+  document.getElementById('cfoodAddBtn').style.background=GI[g].c;
+  renderCfoodList();
+}
+function renderCfoodList(){
+  const el=document.getElementById('cfoodList');if(!el)return;
+  const foods=QF[cfgG]||[],gi=GI[cfgG];
+  if(!foods.length){el.innerHTML='<span style="font-size:11px;color:var(--sub)">食品がありません</span>';return;}
+  el.innerHTML=foods.map((f,i)=>`<span class="cfood-tag" style="background:${gi.c}22;color:${gi.c}">${f}<button class="cfood-del" onclick="delCustomFood(${i})" style="color:${gi.c}">✕</button></span>`).join('');
+}
+function addCustomFood(){
+  const inp=document.getElementById('cfoodInput'),val=inp.value.trim();
+  if(!val)return;
+  if(!QF[cfgG])QF[cfgG]=[];
+  if(!QF[cfgG].includes(val)){QF[cfgG].push(val);saveCFoods();}
+  inp.value='';renderCfoodList();if(sg===cfgG)selG(sg);
+}
+function delCustomFood(idx){QF[cfgG].splice(idx,1);saveCFoods();renderCfoodList();if(sg===cfgG)selG(sg);}
+function saveCFoods(){try{localStorage.setItem(CFK,JSON.stringify(QF));}catch(e){}}
+
+// ページ切替
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById(`page-${p}`).classList.add('active');
+  if(document.getElementById(`nav-${p}`))document.getElementById(`nav-${p}`).classList.add('active');
+  if(p==='week')renderWeek();
+  if(p==='history')renderHistory();
+  window.scrollTo(0,0);
+}
+
+function showShare(){
+  renderShareCard();
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-share').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function renderShareCard(){
+  const days=['日','月','火','水','木','金','土'];
+  const tgt=getTgt();
+  const tgts=[cfg.t1,cfg.t2,cfg.t3,cfg.t4];
+  const end=new Date(),start=new Date();start.setDate(end.getDate()-6);
+  const fmt=d=>`${d.getMonth()+1}/${d.getDate()}`;
+  document.getElementById('share-period').textContent=
+    `${fmt(start)}（${days[start.getDay()]}）〜 ${fmt(end)}（${days[end.getDay()]}）`;
+
+  const weekData=[];
+  const wt={1:0,2:0,3:0,4:0};
+  let totalCardioMin=0,totalMuscle=0,totalDays=0;
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const k=dk(d),rs=recs[k]||[],exs=exRecs[k]||[];
+    const gt=getGT(rs);
+    const total=rs.reduce((s,r)=>s+r.p,0);
+    if(total>0)totalDays++;
+    rs.forEach(r=>{wt[r.g]+=r.p;});
+    exs.forEach(e=>{if(e.type==="cardio")totalCardioMin+=e.min;else totalMuscle++;});
+    weekData.push({d,total,gt});
+  }
+  const weekTotal=Object.values(wt).reduce((a,b)=>a+b,0);
+  const weekAvg=totalDays?Math.round(weekTotal/totalDays*10)/10:0;
+  const minTarget=cfg.t1+cfg.t2+cfg.t3;
+
+  // サマリー（1日平均・記録日数・死守ライン）
+  document.getElementById("share-food-summary").innerHTML=`
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <div style="flex:1;text-align:center;background:#F5F3EF;border-radius:10px;padding:10px 6px">
+        <div style="font-size:9px;color:#999;margin-bottom:3px">1日平均</div>
+        <div style="font-family:serif;font-size:26px;line-height:1;color:#1E1E1E">${weekAvg}</div>
+        <div style="font-size:9px;color:#999">点</div>
+      </div>
+      <div style="flex:1;text-align:center;background:#F5F3EF;border-radius:10px;padding:10px 6px">
+        <div style="font-size:9px;color:#999;margin-bottom:3px">記録日数</div>
+        <div style="font-family:serif;font-size:26px;line-height:1;color:#1E1E1E">${totalDays}</div>
+        <div style="font-size:9px;color:#999">/ 7日</div>
+      </div>
+      <div style="flex:1;text-align:center;background:#FDF1EE;border-radius:10px;padding:10px 6px">
+        <div style="font-size:9px;color:#E8745A;font-weight:700;margin-bottom:3px">死守ライン</div>
+        <div style="font-family:serif;font-size:26px;line-height:1;color:#E8745A">${minTarget}</div>
+        <div style="font-size:9px;color:#E8745A">点/日</div>
+      </div>
+    </div>`;
+
+  // 積み上げ棒グラフ
+  const BAR_H=80;
+  const maxForChart=Math.max(...weekData.map(d=>d.total),tgt,minTarget,1);
+  const minLinePx=Math.round((minTarget/maxForChart)*BAR_H);
+
+  let barsHtml="";
+  weekData.forEach(({d,total,gt})=>{
+    const isT=dk(d)===dk(new Date());
+    const cleared=total>=minTarget;
+    const segHtml=[4,3,2,1].map(g=>{
+      const pts=gt[g]||0;
+      const h=Math.round((pts/maxForChart)*BAR_H);
+      return pts>0?`<div style="width:100%;height:${h}px;background:${GI[g].c};flex-shrink:0"></div>`:"";
+    }).join("");
+    barsHtml+=`
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+        <div style="font-size:8px;font-weight:700;color:${cleared?"#2E7D32":"transparent"};min-height:11px">✓</div>
+        <div style="width:100%;height:${BAR_H}px;position:relative;display:flex;align-items:flex-end">
+          <div style="width:100%;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;border-radius:3px 3px 0 0;opacity:${isT?1:0.75}">${segHtml}</div>
+          <div style="position:absolute;bottom:${minLinePx}px;left:-1px;right:-1px;height:2px;background:#E8745A;z-index:2;border-radius:1px"></div>
+        </div>
+        <div style="font-size:9px;color:${isT?"#1E1E1E":"#999"};font-weight:${isT?700:400}">${days[d.getDay()]}</div>
+        <div style="font-size:8px;color:#999">${total>0?total:""}</div>
+      </div>`;
+  });
+
+  const legendHtml=[1,2,3,4].map(g=>
+    `<span style="display:flex;align-items:center;gap:3px;font-size:9px;color:#555"><span style="width:8px;height:8px;border-radius:2px;background:${GI[g].c};display:inline-block"></span>第${g}群</span>`
+  ).join("");
+
+  document.getElementById("share-daily-bars").innerHTML=`
+    <div style="display:flex;align-items:flex-end;gap:4px;width:100%">${barsHtml}</div>`;
+  document.getElementById("share-daily-days").innerHTML=`
+    <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px">
+      ${legendHtml}
+      <span style="display:flex;align-items:center;gap:3px;font-size:9px;color:#E8745A"><span style="display:inline-block;width:12px;height:2px;background:#E8745A;border-radius:1px"></span>死守ライン</span>
+    </div>`;
+
+  // 4群バランス（日平均）
+  document.getElementById("share-group-bars").innerHTML=[1,2,3,4].map(g=>{
+    const dailyAvg=totalDays?Math.round(wt[g]/totalDays*10)/10:0;
+    const tgtD=tgts[g-1];
+    const pct=Math.min(100,(dailyAvg/tgtD)*100);
+    const ok=dailyAvg>=tgtD;
+    return`<div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+        <span style="color:${GI[g].c};font-weight:700">第${g}群 ${GI[g].name}</span>
+        <span style="color:${ok?"#2E7D32":"#999"};font-weight:${ok?700:400}">平均${dailyAvg}点／目標${tgtD}点${ok?" ✓":""}</span>
+      </div>
+      <div style="background:#F0EDE8;border-radius:4px;height:6px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${GI[g].c};border-radius:4px"></div>
+      </div>
+    </div>`;
+  }).join("");
+
+  // 運動
+  const exWrap=document.getElementById("share-ex-wrap");
+  if(totalCardioMin===0&&totalMuscle===0){exWrap.style.display="none";}
+  else{
+    exWrap.style.display="block";
+    document.getElementById("share-ex-summary").innerHTML=
+      (totalCardioMin>0?`<div style="flex:1;text-align:center;background:#FEF0F0;border-radius:10px;padding:10px 6px"><div style="font-size:9px;color:#E06060;font-weight:700;margin-bottom:3px">🏃 有酸素</div><div style="font-family:serif;font-size:24px;line-height:1;color:#E06060">${totalCardioMin}</div><div style="font-size:9px;color:#E06060">分</div></div>`:"")
+      +(totalMuscle>0?`<div style="flex:1;text-align:center;background:#EEF2FB;border-radius:10px;padding:10px 6px"><div style="font-size:9px;color:#6B8FCC;font-weight:700;margin-bottom:3px">💪 筋トレ</div><div style="font-family:serif;font-size:24px;line-height:1;color:#6B8FCC">${totalMuscle}</div><div style="font-size:9px;color:#6B8FCC">回</div></div>`:"");
+  }
+}
+init();
+</script>
+<!-- PWA: Service Worker登録 -->
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js')
+      .then(()=>console.log('SW registered'))
+      .catch(e=>console.log('SW error',e));
+  });
+}
+</script>
+</body>
+</html>

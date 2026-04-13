@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#005A9C">
+<title>1週間チャレンジ | 桃ちゃん先生</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Serif+Display&display=swap");
+:root{
+  --blue:#005A9C;
+  --g1:#E8745A;--g1b:#FDF1EE;--g1d:#C45A40;
+  --g2:#5B9E6B;--g2b:#EEF7F1;--g2d:#3E7D50;
+  --g3:#E8B84B;--g3b:#FDF7E8;--g3d:#C09030;
+  --g4:#6B8FCC;--g4b:#EEF2FB;--g4d:#4A6BA8;
+  --bg:#F5F3EF;--card:#FFF;--text:#1A1A2E;--sub:#8A8A9A;--border:#E8E6E0;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);max-width:480px;margin:0 auto;padding-bottom:48px}
+.hero{background:linear-gradient(135deg,var(--blue),#1A7FCC);padding:22px 20px 18px;text-align:center}
+.hero-org{font-size:10px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,.6);margin-bottom:5px}
+.hero-title{font-family:"DM Serif Display",serif;font-size:24px;color:#fff;margin-bottom:3px}
+.hero-sub{font-size:11px;color:rgba(255,255,255,.65)}
+.body{padding:10px 12px 0}
+.rule-note{background:var(--g1b);border-left:3px solid var(--g1);border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:10px;font-size:11px;color:var(--g1d);line-height:1.7}
+.day-card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.day-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.day-label{font-size:17px;font-weight:900}
+.day-right{display:flex;align-items:center;gap:8px}
+.day-pts{font-size:12px;color:var(--sub);font-weight:700}
+.day-pts b{font-family:"DM Serif Display",serif;font-size:20px;color:var(--blue)}
+.day-badge{font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;background:var(--bg);color:var(--sub);transition:all .3s}
+.day-badge.done{background:#E8F5E9;color:#2E7D32}
+.groups{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.grp{border-radius:12px;padding:10px}
+.grp.g1{background:var(--g1b)}.grp.g2{background:var(--g2b)}.grp.g3{background:var(--g3b)}.grp.g4{background:var(--g4b)}
+.grp-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.grp-name{font-size:10px;font-weight:700}
+.grp-badge{font-size:13px;min-width:16px;text-align:center}
+.grp-cats{display:flex;flex-direction:column;gap:5px}
+/* カテゴリボタン：3状態 */
+.cat-btn{width:100%;padding:8px 9px;border:none;border-radius:9px;font-family:"Noto Sans JP",sans-serif;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .18s;text-align:left}
+.cat-btn .ci{font-size:15px;flex-shrink:0}
+.cat-btn .cn{flex:1;line-height:1.2}
+.cat-btn .cp{font-family:"DM Serif Display",serif;font-size:15px;flex-shrink:0;min-width:28px;text-align:right;transition:all .2s}
+/* 0点：デフォルト */
+.g1 .cat-btn{background:rgba(232,116,90,.12);color:var(--g1d)}
+.g2 .cat-btn{background:rgba(91,158,107,.12);color:var(--g2d)}
+.g3 .cat-btn{background:rgba(232,184,75,.15);color:var(--g3d)}
+.g4 .cat-btn{background:rgba(107,143,204,.12);color:var(--g4d)}
+/* half：1点（最大2点のもの・1段階目） */
+.g1 .cat-btn.half{background:rgba(232,116,90,.45);color:var(--g1d)}
+.g2 .cat-btn.half{background:rgba(91,158,107,.45);color:var(--g2d)}
+.g3 .cat-btn.half{background:rgba(232,184,75,.45);color:var(--g3d)}
+.g4 .cat-btn.half{background:rgba(107,143,204,.45);color:var(--g4d)}
+/* full：満点（全色） */
+.g1 .cat-btn.full{background:var(--g1);color:#fff}
+.g2 .cat-btn.full{background:var(--g2);color:#fff}
+.g3 .cat-btn.full{background:var(--g3);color:#fff}
+.g4 .cat-btn.full{background:var(--g4);color:#fff}
+.memo{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:"Noto Sans JP",sans-serif;font-size:12px;color:var(--text);background:var(--bg);outline:none;resize:none;min-height:32px}
+.memo:focus{border-color:var(--blue)}
+.summary{background:var(--card);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.sum-title{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--sub);margin-bottom:12px}
+.sum-nums{display:flex;gap:8px;margin-bottom:12px}
+.sn{flex:1;background:var(--bg);border-radius:10px;padding:10px 6px;text-align:center}
+.sn-val{font-family:"DM Serif Display",serif;font-size:26px;line-height:1;color:var(--blue)}
+.sn-label{font-size:9px;color:var(--sub);margin-top:3px}
+.stars{display:flex;justify-content:center;gap:4px;margin-bottom:8px}
+.star{font-size:20px;filter:grayscale(1);opacity:.3;transition:all .3s}
+.star.on{filter:none;opacity:1}
+.sum-msg{font-size:12px;color:var(--sub);text-align:center;line-height:1.7}
+.banner{background:linear-gradient(135deg,#2E7D32,#4CAF50);border-radius:14px;padding:18px;text-align:center;margin-bottom:10px;display:none}
+.banner.show{display:block;animation:pop .4s ease}
+@keyframes pop{0%{transform:scale(.9);opacity:0}100%{transform:scale(1);opacity:1}}
+.bn-icon{font-size:40px;margin-bottom:6px}
+.bn-title{font-size:18px;font-weight:900;color:#fff;margin-bottom:4px}
+.bn-sub{font-size:12px;color:rgba(255,255,255,.8)}
+.cta{padding:0 12px}
+.btn{width:100%;padding:14px;border:none;border-radius:13px;font-family:"Noto Sans JP",sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s}
+.btn:active{opacity:.8}
+.btn-primary{background:linear-gradient(135deg,var(--blue),#1A7FCC);color:#fff;box-shadow:0 4px 18px rgba(0,90,156,.3)}
+.btn-ghost{background:var(--bg);color:var(--sub);font-size:12px;border:1.5px solid var(--border)}
+.footer{text-align:center;padding:16px 12px 4px;font-size:10px;color:var(--sub);line-height:1.8}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-org">背骨コンディショニング協会認定</div>
+  <h1 class="hero-title">1週間チャレンジ</h1>
+  <p class="hero-sub">食トレインストラクター 桃ちゃん先生</p>
+</div>
+<div class="body">
+  <div class="rule-note">🎯 <strong>第1・2・3群をコンプリートが目標！</strong><br>第4群（穀物・油・砂糖）は点数の参考として記録します。<br>点数は1点ずつ積み上げ。最大点数まで繰り返しタップで増やせます。</div>
+  <div id="banner" class="banner">
+    <div class="bn-icon">🎉</div>
+    <div class="bn-title">7日間コンプリート！</div>
+    <div class="bn-sub">素晴らしい！桃ちゃん先生に見せましょう</div>
+  </div>
+  <div id="dayCards"></div>
+  <div class="summary">
+    <div class="sum-title">TODAY'S WEEK</div>
+    <div class="sum-nums">
+      <div class="sn"><div class="sn-val" id="sumDays">0</div><div class="sn-label">記録日数</div></div>
+      <div class="sn"><div class="sn-val" id="sumFull">0</div><div class="sn-label">1〜3群達成</div></div>
+      <div class="sn"><div class="sn-val" id="sumRate">0%</div><div class="sn-label">達成率</div></div>
+    </div>
+    <div class="stars" id="stars">
+      <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+    </div>
+    <div class="sum-msg" id="sumMsg">食品をタップして記録しましょう</div>
+  </div>
+</div>
+<div class="cta">
+  <button class="btn btn-primary" onclick="goContact()">💬 桃ちゃん先生に結果を見せる</button>
+  <button class="btn btn-ghost" onclick="shareSheet()">📤 スクショしてシェア</button>
+</div>
+<div class="footer">背骨コンディショニング協会認定<br>食トレインストラクター 桃ちゃん先生</div>
+<script>
+const DAYS=["月","火","水","木","金","土","日"];
+// maxPts: 最大点数（1点刻みでタップ、超えたらリセット）
+const GROUPS=[
+  {key:"g1",cls:"g1",name:"🥛 第1群 乳・卵",must:true,cats:[
+    {id:"milk",icon:"🥛",name:"乳・乳製品",maxPts:2},
+    {id:"egg",icon:"🥚",name:"卵",maxPts:1}
+  ]},
+  {key:"g2",cls:"g2",name:"🐟 第2群 魚・肉・豆",must:true,cats:[
+    {id:"fish",icon:"🐟",name:"魚介・肉・加工品",maxPts:2},
+    {id:"bean",icon:"🫘",name:"豆・豆製品",maxPts:1}
+  ]},
+  {key:"g3",cls:"g3",name:"🥦 第3群 野菜・芋・果物",must:true,cats:[
+    {id:"veg",icon:"🥦",name:"緑黄色野菜",maxPts:1},
+    {id:"imo",icon:"🍠",name:"芋類",maxPts:1},
+    {id:"fruit",icon:"🍎",name:"果物",maxPts:1}
+  ]},
+  {key:"g4",cls:"g4",name:"🍚 第4群 穀・油・砂糖",must:false,cats:[
+    {id:"grain",icon:"🍚",name:"穀類",maxPts:9},
+    {id:"oil",icon:"🫙",name:"油脂",maxPts:2},
+    {id:"sugar",icon:"🍬",name:"砂糖",maxPts:1}
+  ]}
+];
+const SK="sc_cat3_v1";
+let data=JSON.parse(localStorage.getItem(SK)||"{}");
+function save(){try{localStorage.setItem(SK,JSON.stringify(data));}catch(e){}}
+
+function initDay(di){
+  if(!data[di]){
+    data[di]={pts:{},memo:""};
+    GROUPS.forEach(g=>g.cats.forEach(c=>{data[di].pts[g.key+"_"+c.id]=0;}));
+  }
+}
+
+function getCatPts(di,gkey,cid){return(data[di]&&data[di].pts[gkey+"_"+cid])||0;}
+function isGrpDone(di,gkey){
+  const g=GROUPS.find(x=>x.key===gkey);
+  return g.cats.every(c=>getCatPts(di,g.key,c.id)>=c.maxPts);
+}
+function isDayDone(di){return GROUPS.filter(g=>g.must).every(g=>isGrpDone(di,g.key));}
+function getDayTotalPts(di){
+  let t=0;
+  GROUPS.forEach(g=>g.cats.forEach(c=>{t+=getCatPts(di,g.key,c.id);}));
+  return Math.round(t*10)/10;
+}
+
+// ボタンのクラスを決定（0=デフォルト, 0<pts<max=half, pts==max=full）
+function stateClass(pts,maxPts){
+  if(pts<=0)return"";
+  if(pts>=maxPts)return" full";
+  return" half";
+}
+
+function build(){
+  const cont=document.getElementById("dayCards");cont.innerHTML="";
+  DAYS.forEach((day,di)=>{
+    initDay(di);
+    const done=isDayDone(di),totalPts=getDayTotalPts(di);
+    const card=document.createElement("div");card.className="day-card";
+
+    const groupsHtml=GROUPS.map(g=>{
+      const gd=isGrpDone(di,g.key);
+      const gbadge=g.must?(gd?"✅":""):"";
+      const catsHtml=g.cats.map(c=>{
+        const pts=getCatPts(di,g.key,c.id);
+        const sc=stateClass(pts,c.maxPts);
+        const ptsDisp=pts>0?pts:"";
+        const maxDisp=c.maxPts>1?"/"+c.maxPts:"";
+        return "<button class=\"cat-btn"+sc+"\" id=\"cat_"+di+"_"+g.key+"_"+c.id+"\" onclick=\"tapCat("+di+",'"+g.key+"','"+c.id+"')\">"
+          +"<span class=\"ci\">"+c.icon+"</span>"
+          +"<span class=\"cn\">"+c.name+"</span>"
+          +"<span class=\"cp\" id=\"cp_"+di+"_"+g.key+"_"+c.id+"\">"+(pts>0?pts+maxDisp:"−"+maxDisp)+"</span>"
+          +"</button>";
+      }).join("");
+      return "<div class=\"grp "+g.cls+"\" id=\"grp_"+di+"_"+g.key+"\">"
+        +"<div class=\"grp-hd\">"
+        +"<span class=\"grp-name\">"+g.name+"</span>"
+        +"<span class=\"grp-badge\" id=\"gb_"+di+"_"+g.key+"\">"+gbadge+"</span>"
+        +"</div>"
+        +"<div class=\"grp-cats\">"+catsHtml+"</div>"
+        +"</div>";
+    }).join("");
+
+    card.innerHTML="<div class=\"day-hd\">"
+      +"<span class=\"day-label\">"+day+"曜日</span>"
+      +"<div class=\"day-right\">"
+      +"<span class=\"day-pts\"><b id=\"dpts_"+di+"\">"+totalPts+"</b>点</span>"
+      +"<span class=\"day-badge"+(done?" done":"")+"\" id=\"db_"+di+"\">"+(done?"🎉 達成！":"未達成")+"</span>"
+      +"</div></div>"
+      +"<div class=\"groups\">"+groupsHtml+"</div>"
+      +"<textarea class=\"memo\" id=\"memo"+di+"\" placeholder=\"一言メモ（任意）\" oninput=\"saveMemo("+di+")\">"+(data[di].memo||"")+"</textarea>";
+    cont.appendChild(card);
+  });
+  updateSummary();
+}
+
+function tapCat(di,gkey,cid){
+  initDay(di);
+  const g=GROUPS.find(x=>x.key===gkey);
+  const c=g.cats.find(x=>x.id===cid);
+  const cur=getCatPts(di,gkey,cid);
+  // 1点ずつ増加、maxを超えたら0にリセット
+  const next=(cur>=c.maxPts)?0:cur+1;
+  data[di].pts[gkey+"_"+cid]=next;
+  save();
+
+  // ボタン更新
+  const btn=document.getElementById("cat_"+di+"_"+gkey+"_"+cid);
+  btn.className="cat-btn"+stateClass(next,c.maxPts);
+  const maxDisp=c.maxPts>1?"/"+c.maxPts:"";
+  document.getElementById("cp_"+di+"_"+gkey+"_"+cid).textContent=next>0?next+maxDisp:"−"+maxDisp;
+
+  // 群バッジ更新
+  const gd=isGrpDone(di,gkey);
+  document.getElementById("gb_"+di+"_"+gkey).textContent=g.must?(gd?"✅":""):"";
+
+  // 日達成・合計点更新
+  const done=isDayDone(di);
+  const db=document.getElementById("db_"+di);
+  db.classList.toggle("done",done);
+  db.textContent=done?"🎉 達成！":"未達成";
+  document.getElementById("dpts_"+di).textContent=getDayTotalPts(di);
+
+  updateSummary();
+}
+
+function saveMemo(di){initDay(di);data[di].memo=document.getElementById("memo"+di).value;save();}
+
+function updateSummary(){
+  const recorded=DAYS.map((_,i)=>{initDay(i);return Object.values(data[i].pts).some(v=>v>0);}).filter(Boolean).length;
+  const full=DAYS.map((_,i)=>isDayDone(i)).filter(Boolean).length;
+  const rate=recorded?Math.round(full/7*100):0;
+  document.getElementById("sumDays").textContent=recorded;
+  document.getElementById("sumFull").textContent=full;
+  document.getElementById("sumRate").textContent=rate+"%";
+  document.querySelectorAll(".star").forEach((s,i)=>s.classList.toggle("on",i<Math.ceil(full/7*5)));
+  const msgs=["食品をタップして記録しましょう","スタートできましたね！続けてみましょう","いい調子！習慣になってきましたね😊","すばらしい！あと少しで完走です！","絶好調！第1〜3群達成を目指して！","7日間コンプリートおめでとうございます🎉"];
+  document.getElementById("sumMsg").textContent=msgs[Math.min(full,5)];
+  document.getElementById("banner").classList.toggle("show",full===7);
+}
+// ===== 連絡先URL：ここを変更してください =====
+const CONTACT_URL="https://lin.ee/XXXXXXXX"; // LINE公式またはURLを入れてください
+
+function goContact(){
+  if(CONTACT_URL&&CONTACT_URL!=="https://lin.ee/XXXXXXXX"){
+    window.open(CONTACT_URL,"_blank");
+  }else{
+    alert("連絡先URLが設定されていません。\nファイル内のCONTACT_URLを設定してください。");
+  }
+}
+
+function shareSheet(){
+  const full=DAYS.map((_,i)=>isDayDone(i)).filter(Boolean).length;
+  const recorded=DAYS.map((_,i)=>{initDay(i);return Object.values(data[i].pts).some(v=>v>0);}).filter(Boolean).length;
+  let totalPts=0;DAYS.forEach((_,i)=>{initDay(i);totalPts+=getDayTotalPts(i);});
+  totalPts=Math.round(totalPts*10)/10;
+  const rate=recorded?Math.round(full/7*100):0;
+  const stars="⭐".repeat(Math.min(Math.ceil(full/7*5),5))||"（まだ記録なし）";
+  const msg=full===7?"🎉 7日間コンプリート達成！":full>=5?"絶好調！あと少しです！":full>=3?"順調に続けられています！":"これからもっと積み上げていきましょう！";
+  const text=`【食トレ1週間チャレンジ結果】\n背骨コンディショニング協会認定\n食トレインストラクター 桃ちゃん先生\n\n📅 記録日数：${recorded}/7日\n🎯 1〜3群達成：${full}/7日（達成率${rate}%）\n📊 週間合計点数：${totalPts}点\n${stars}\n\n${msg}`;
+  if(navigator.share){
+    navigator.share({title:"食トレ1週間チャレンジ結果",text:text}).catch(()=>{});
+  }else if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>{alert("結果をコピーしました！\nLINEなどに貼り付けて桃ちゃん先生に送りましょう😊");});
+  }else{
+    alert(text);
+  }
+}
+build();
+</script>
+</body>
+</html>
